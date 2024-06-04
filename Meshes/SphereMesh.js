@@ -6,7 +6,6 @@ export class SphereMesh extends Mesh {
         this.resolution = options.resolution || 4;
         this.calculateVertices();
         this.setupVertexBuffer();
-
     }
 
     calculateVertices(){
@@ -23,8 +22,6 @@ export class SphereMesh extends Mesh {
 
         const verticalInterval = 1 / this.resolution;
         let r = 0.5;
-        //If there are M lines of latitude (horizontal) and N lines of longitude (vertical), then put dots at
-        //(x, y, z) = (sin(Pi * m/M) cos(2Pi * n/N), sin(Pi * m/M) sin(2Pi * n/N), cos(Pi * m/M))
 
         for(let i = 0; i < this.resolution + 1; i++){
             r = Math.sin(Math.PI * i / this.resolution) / 2;
@@ -37,7 +34,6 @@ export class SphereMesh extends Mesh {
                 this.uvCoordinates.push([(j * verticalInterval), 1 - (i * verticalInterval)]);
                 const normalVec = vec3.normalize(vec3.create(), vec3.fromValues(x, y, z));
                 this.normalCoordinates.push([normalVec[0], normalVec[1], normalVec[2]]);
-                // this.normalCoordinates.push([x, y, z]);
             }
         }
     }
@@ -82,6 +78,5 @@ export class SphereMesh extends Mesh {
         this.triangleVertices = new Float32Array(this.triangleCoordinates.flat());
         this.triangleUVs = new Float32Array(this.uvs.flat());
         this.triangleNormals = new Float32Array(this.normals.flat());
-
     }
 }

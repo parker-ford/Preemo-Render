@@ -1,5 +1,6 @@
 import { vec3 } from "gl-matrix";
 import { Mesh } from "./Mesh.js";
+
 export class ConeMesh extends Mesh {
     constructor(options){
         super(options);
@@ -7,7 +8,6 @@ export class ConeMesh extends Mesh {
         this.height = options.height || 1; 
         this.calculateVertices();
         this.setupVertexBuffer();
-
     }
 
     calculateVertices(){
@@ -49,7 +49,6 @@ export class ConeMesh extends Mesh {
         this.vertexCoordinates.push([0, -0.5, 0]);
         this.uvCoordinates.push([0.5, 0.5]);
         this.normalCoordinates.push([0, -1, 0]);
-
     }
 
     calculateTriangleVertices(){

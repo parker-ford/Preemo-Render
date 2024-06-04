@@ -1,5 +1,6 @@
 import { vec3 } from "gl-matrix";
 import { Mesh } from "./Mesh.js";
+
 export class TorusMesh extends Mesh {
     constructor(options){
         super(options);
@@ -10,7 +11,6 @@ export class TorusMesh extends Mesh {
 
         this.calculateVertices();
         this.setupVertexBuffer();
-
     }
 
     calculateVertices(){
@@ -53,8 +53,6 @@ export class TorusMesh extends Mesh {
                 this.normalCoordinates.push([normalVec[0], normalVec[1], normalVec[2]]);
             }
         }
-
-       
     }
 
     calculateTriangleVertices(){

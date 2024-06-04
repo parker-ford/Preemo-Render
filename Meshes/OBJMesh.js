@@ -1,4 +1,3 @@
-import { vec3 } from "gl-matrix";
 import { Mesh } from "./Mesh.js";
 export class OBJMesh extends Mesh {
     constructor(options){
@@ -77,7 +76,6 @@ export class OBJMesh extends Mesh {
         this.uvs = [];
         this.normals = [];
 
-
         for(let i = 0; i < this.faces.length; i++){
         
             //Top Triangle
@@ -105,7 +103,6 @@ export class OBJMesh extends Mesh {
             this.normals.push(this.normalCoordinates[this.faces[i][0][2]]);
             this.normals.push(this.normalCoordinates[this.faces[i][3][2]]);
             this.normals.push(this.normalCoordinates[this.faces[i][2][2]]);
-
         }
 
         this.triangleVertices = new Float32Array(this.triangleCoordinates.flat());
@@ -154,6 +151,5 @@ export class OBJMesh extends Mesh {
         else{
             this.calculateTriangleVerticesTriangleFace();
         }
-
     }
 }

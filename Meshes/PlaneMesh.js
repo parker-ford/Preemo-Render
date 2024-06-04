@@ -1,4 +1,5 @@
 import { Mesh } from "./Mesh.js";
+
 export class PlaneMesh extends Mesh {
     constructor(options){
         super(options);
@@ -6,7 +7,6 @@ export class PlaneMesh extends Mesh {
         this.height = options.height || 1; 
         this.calculateVertices();
         this.setupVertexBuffer();
-
     }
 
     calculateVertices(){
@@ -65,7 +65,6 @@ export class PlaneMesh extends Mesh {
                 this.normals.push(this.normalCoordinates[(j + 1) + ((i + 1) * (this.height + 1))]);
                 this.normals.push(this.normalCoordinates[j + ((i + 1) * (this.height + 1))]);
                 this.normals.push(this.normalCoordinates[j + (i * (this.height + 1))]);
-
             }
         }
 

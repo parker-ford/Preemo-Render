@@ -1,4 +1,5 @@
 import { Mesh } from "./Mesh.js";
+
 export class CubeMesh extends Mesh {
     constructor(options){
         super(options);
@@ -7,7 +8,6 @@ export class CubeMesh extends Mesh {
         this.depth = options.depth || 1; 
         this.calculateVertices();
         this.setupVertexBuffer();
-
     }
 
     calculateVertices(){
@@ -15,7 +15,6 @@ export class CubeMesh extends Mesh {
         this.calculateTriangleVertices();
         this.calculateLineVertices();
     }
-    
 
     calculateVertexCoordinates(){
         this.vertexCoordinates = [];
