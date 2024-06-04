@@ -1,5 +1,5 @@
 import { Light } from "./Light";
-import { ConeGizmoMesh } from "../Meshes/ConeGizmoMesh";
+import { ConeGizmoMesh } from "../Meshes/Gizmos/ConeGizmoMesh";
 import { BasicMaterial } from "../Materials/BasicMaterial";
 
 export class SpotLight extends Light {

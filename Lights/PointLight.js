@@ -1,5 +1,5 @@
 import { Light } from "./Light";
-import { SphereGizmoMesh } from "../Meshes/SphereGizmoMesh";
+import { SphereGizmoMesh } from "../Meshes/Gizmos/SphereGizmoMesh";
 
 export class PointLight extends Light {
     #mode = 1;

@@ -1,7 +1,6 @@
 import { vec3 } from "gl-matrix";
-import { LineGizmoMesh } from "../Meshes/LineGizmoMesh";
+import { LineGizmoMesh } from "../Meshes/Gizmos/LineGizmoMesh";
 import { Light } from "./Light";
-
 
 export class DirectionalLight extends Light {
     #mode = 0;
@@ -14,6 +13,14 @@ export class DirectionalLight extends Light {
         });
     }
 
+    get mode() {
+        return this.#mode;
+    }
+
+    set mode(value) {
+        this.#mode = value;
+    }
+
     updateLightDir(){
         this.lightDir = vec3.fromValues(-this.transform.position[0], -this.transform.position[1], -this.transform.position[2]);
         if(this.lightDir[0] == 0 && this.lightDir[1] == 0 && this.lightDir[2] == 0){
@@ -21,14 +28,6 @@ export class DirectionalLight extends Light {
         }
         this.lightDir = vec3.normalize(this.lightDir, this.lightDir);
         this.transform.setUpVector(this.lightDir);
-    }
-
-    get mode() {
-        return this.#mode;
-    }
-
-    set mode(value) {
-        this.#mode = value;
     }
 
     update(){

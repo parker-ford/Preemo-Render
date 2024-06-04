@@ -1,4 +1,4 @@
-import { Mesh } from './Mesh.js';
+import { Mesh } from '../Mesh.js';
 
 export class SphereGizmoMesh extends Mesh {
     constructor(options){

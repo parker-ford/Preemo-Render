@@ -29,8 +29,9 @@ export * from './Meshes/CylinderMesh.js'
 export * from './Meshes/TorusMesh.js'
 export * from './Meshes/ConeMesh.js'
 export * from './Meshes/OBJMesh.js'
-export * from './Meshes/SphereGizmoMesh.js'
-export * from './Meshes/ConeGizmoMesh.js'
+export * from './Meshes/Gizmos/SphereGizmoMesh.js'
+export * from './Meshes/Gizmos/ConeGizmoMesh.js'
+export * from './Meshes/Gizmos/LineGizmoMesh.js'
 
 //Lights
 export * from './Lights/DirectionalLight.js'
