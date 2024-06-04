@@ -1,24 +1,23 @@
 import { vec3 } from "gl-matrix";
 import { CylinderMesh } from "../Meshes/CylinderMesh";
+import { LineGizmoMesh } from "../Meshes/LineGizmoMesh";
 import { BasicMaterial } from "../Materials/BasicMaterial";
 import { Light } from "./Light";
 import { Transform } from "../Transform";
+import { SphereGizmoMesh } from "../Meshes/SphereGizmoMesh";
 
 export class DirectionalLight extends Light {
     constructor(options) {
-        super();
-        this.mode = 0;
-        this.transform = new Transform({});
-        this.transform.scale = vec3.fromValues(0.01, 0.75, 0.01);
+        super(options);
+        this.mode = 0;;
         this.mesh = new CylinderMesh({width: 6, height: 1, wireframe: true});
-        this.color = options.color || [1, 1, 1, 1];
+        // this.mesh = new SphereGizmoMesh({width: 6, height: 1, wireframe: true});
+        this.mesh = new LineGizmoMesh({wireframe: true});
         this.material = new BasicMaterial({color: this.color});
-        this.lightDir = vec3.fromValues(0,0,0);
         this.material.init({
             vertexBufferDescriptors: this.mesh.vertexBufferDescriptors,
             wireframe: this.mesh.wireframe
         });
-        this.intensity = options.intensity || 1;
     }
 
     updateLightDir(){
