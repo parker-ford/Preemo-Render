@@ -17,9 +17,10 @@ export class Mesh {
 
         this.vertexCoordinates = null;
         this.wireframe = options.wireframe || false;
+
+        this.triangleCoordinates = [];
     }
-    
-    //Will add additional vertex data such as normals, uvs, etc.
+
     setupVertexBuffer(){
 
         let vertexData;
@@ -95,6 +96,48 @@ export class Mesh {
 
     getVertexCount(){
         return this.wireframe ? this.lineVertices.length / 3: this.triangleVertices.length / 3;
+    }
+
+    calculateLineVertices(){
+        let lines = [];
+        let line_uvs = [];
+        let line_normals = [];
+
+        for(let i = 0; i < this.triangleCoordinates.length; i+=3){
+            //Line 1
+            lines.push(this.triangleCoordinates[i]);
+            lines.push(this.triangleCoordinates[i+1]);
+
+            line_uvs.push(this.uvs[i]);
+            line_uvs.push(this.uvs[i+1]);
+
+            line_normals.push(this.normals[i]);
+            line_normals.push(this.normals[i+1]);
+
+            //Line 2
+            lines.push(this.triangleCoordinates[i + 1]);
+            lines.push(this.triangleCoordinates[i + 2]);
+
+            line_uvs.push(this.uvs[i + 1]);
+            line_uvs.push(this.uvs[i + 2]);
+
+            line_normals.push(this.normals[i + 1]);
+            line_normals.push(this.normals[i + 2]);
+
+            //Line 3
+            lines.push(this.triangleCoordinates[i + 2]);
+            lines.push(this.triangleCoordinates[i]);
+
+            line_uvs.push(this.uvs[i + 2]);
+            line_uvs.push(this.uvs[i]);
+
+            line_normals.push(this.normals[i + 2]);
+            line_normals.push(this.normals[i]);
+        }
+
+        this.lineVertices = new Float32Array(lines.flat());
+        this.lineUVs = new Float32Array(line_uvs.flat());
+        this.lineNormals = new Float32Array(line_normals.flat());
     }
 
 }
