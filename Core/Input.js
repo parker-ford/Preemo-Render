@@ -3,7 +3,6 @@ export class Input {
     static mouseButtons = {};
     static mousePosition = { x: 0, y: 0 };
     static deltaMouse = { x: 0, y: 0 };
-
     static initialized = false;
 
     static init() {

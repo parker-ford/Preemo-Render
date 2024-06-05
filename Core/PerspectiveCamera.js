@@ -26,7 +26,6 @@ export class PerspectiveCamera {
     }
 
     update(){
-
         if(this.useControlls){
             this.controllsUpdate();
         }
@@ -51,7 +50,6 @@ export class PerspectiveCamera {
 
 
     controllsUpdate(){
-
         this.smoothDeltaMouse = this.smoothDeltaMouse || vec2.create();
         this.smoothingFactor = 0.16;
 
@@ -87,7 +85,6 @@ export class PerspectiveCamera {
             mat4.multiply(R, R, mat4.invert(mat4.create(), invP));
             vec3.transformMat4(this.transform.position, this.transform.position, R);
             quat.multiply(this.transform.rotation, q, this.transform.rotation);
-
         }
     }
 }

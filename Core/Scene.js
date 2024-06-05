@@ -18,7 +18,6 @@ export class Scene {
     }
 
     add(object) {
-        // this.object_count++;
         this.objects.push(object);
         if(object.transform && !(object instanceof PerspectiveCamera)){
             this.object_count++;
@@ -45,7 +44,6 @@ export class Scene {
             this.lights_count--;
             this.light_data = new ArrayBuffer(this.light_data.byteLength - 80);
         }
-
     }
 
     //TODO: I bet this doesn't work but I don't think I'll care until later
@@ -53,7 +51,6 @@ export class Scene {
         this.objects = [];
         this.object_count = 0;
     }
-
 
     update(){
         var transformOffset = 0;
@@ -80,10 +77,8 @@ export class Scene {
             }
         });
 
-
         var lightOffset = 0;
         this.lights.forEach(light => {
-            //console.log("Test");
             const LightDataValues = new ArrayBuffer(80);
             const LightDataViews = {
                 color: new Float32Array(LightDataValues, 0, 4),

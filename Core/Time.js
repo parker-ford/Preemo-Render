@@ -13,7 +13,6 @@ export class Time {
 
 function frame() {
     Time.update();
-
     requestAnimationFrame(frame);
 }
 

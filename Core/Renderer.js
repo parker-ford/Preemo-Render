@@ -159,11 +159,6 @@ export class Renderer {
         this.device.queue.writeBuffer(this.uniformBuffer, 64, camera.projectionMatrix);
 
         //Light Data
-        if(this.printLightBuffer){
-            //console.log(scene.light_data);
-            //this.printLightBuffer = false;
-            //console.log(scene.object_data.length);
-        }
         let clearBuffer = new ArrayBuffer(this.lightBuffer.size);
         this.device.queue.writeBuffer(this.lightBuffer, 0, clearBuffer);
         this.device.queue.writeBuffer(this.lightBuffer, 0, scene.light_data, 0, scene.light_data.byteLength);

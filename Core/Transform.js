@@ -2,7 +2,6 @@ import { mat4, vec3, quat } from "gl-matrix";
 
 export class Transform {
     constructor(options) {
-
         this.position = vec3.create();
 
         this.rotation = quat.create();
@@ -17,7 +16,6 @@ export class Transform {
         this.TRS = mat4.create();
         this.TRS_I_T = mat4.create();
         this.updateTRS();
-
     }
 
     updateTRS(){
@@ -46,7 +44,6 @@ export class Transform {
         vec3.normalize(newUp, newUp);
         quat.rotationTo(this.rotation, this.up, newUp);
         vec3.copy(this.up, newUp);
-        // this.up = newUp;
     }
 
     setForwardVector(newForward){

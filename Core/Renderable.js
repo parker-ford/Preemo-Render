@@ -4,7 +4,6 @@ import {Transform} from './Transform.js';
 
 export class Renderable{
     constructor(options){
-
         if (!(options.mesh instanceof Mesh)) {
             throw new Error('Renderable must be constructed with an instance of Mesh');
         }
@@ -42,6 +41,4 @@ export class Renderable{
     update(){
         this.transform.update();
     }
-
-
 }
