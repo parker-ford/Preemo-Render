@@ -1,4 +1,4 @@
-import { Scene } from "./Scene";
+import { Scene } from "../Core/Scene";
 import { BasicTriangle } from "./BasicTriangle";
 
 export class BasicTriangleRenderer {

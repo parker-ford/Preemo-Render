@@ -1,8 +1,8 @@
 import { vec4 } from 'gl-matrix';
 import { Material } from './Material.js';
-import { Renderer } from '../Renderer.js';
+import { Renderer } from '../Core/Renderer.js';
 import shader from './shaders/basicTextureLit.wgsl?raw';
-import { Texture } from '../Texture.js';
+import { Texture2D } from '../Texture/Texture2D.js';
 
 export class BasicTextureLitMaterial extends Material {
     static pipelines = {};
@@ -17,7 +17,7 @@ export class BasicTextureLitMaterial extends Material {
         this.ambient = options.ambient || 0.5;
         this.tiling = options.tiling || 1;
         this.offset = options.offset || 0;
-        this.texture = options.texture || Texture.getDefaultTexture();
+        this.texture = options.texture || Texture2D.getDefaultTexture();
     }
 
     init(options){

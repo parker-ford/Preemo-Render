@@ -1,6 +1,6 @@
 import { vec4 } from 'gl-matrix';
 import { Material } from './Material.js';
-import { Renderer } from '../Renderer.js';
+import { Renderer } from '../Core/Renderer.js';
 import shader from './shaders/basicLitShader.wgsl?raw';
 
 export class BasicLitMaterial extends Material {

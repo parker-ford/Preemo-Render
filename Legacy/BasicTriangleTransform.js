@@ -1,5 +1,5 @@
 import { BasicTransformRenderer } from './BasicTransformRenderer.js';
-import { Transform } from './Transform.js';
+import { Transform } from '../Core/Transform.js';
 
 export class BasicTriangleTransform {
     constructor(options) {

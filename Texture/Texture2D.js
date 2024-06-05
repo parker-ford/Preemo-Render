@@ -1,7 +1,6 @@
-import { Renderer } from "./Renderer";
+import { Renderer } from "../Core/Renderer";
 
-export class Texture {
-
+export class Texture2D {
     static classMipModule = null;
     static classMipSampler = null;
     static pipelinesByFormat = {};
@@ -9,7 +8,7 @@ export class Texture {
 
     static getDefaultTexture() {
         if(!this.defaultTexture){
-            this.defaultTexture = new Texture({});
+            this.defaultTexture = new Texture2D({});
         }
         return this.defaultTexture;
     }
@@ -200,8 +199,6 @@ export class Texture {
         }
         return this.constructor.pipelinesByFormat[format];
     }
-
-
 
     generateMips() {
         const encoder = Renderer.instance.getDevice().createCommandEncoder({

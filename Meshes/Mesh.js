@@ -1,4 +1,4 @@
-import {Renderer} from "../Renderer"
+import {Renderer} from "../Core/Renderer"
 
 export class Mesh {
     constructor(options){

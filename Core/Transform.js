@@ -1,7 +1,5 @@
 import { mat4, vec3, quat } from "gl-matrix";
 
-
-
 export class Transform {
     constructor(options) {
 

@@ -1,5 +1,5 @@
-import {Mesh} from './Meshes/Mesh.js';
-import {Material} from './Materials/Material.js';
+import {Mesh} from '../Meshes/Mesh.js';
+import {Material} from '../Materials/Material.js';
 import {Transform} from './Transform.js';
 
 export class Renderable{

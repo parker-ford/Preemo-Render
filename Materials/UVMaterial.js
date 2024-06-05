@@ -1,6 +1,6 @@
 import { vec4 } from 'gl-matrix';
 import { Material } from './Material.js';
-import { Renderer } from '../Renderer.js';
+import { Renderer } from '../Core/Renderer.js';
 import basicMaterialShader from './shaders/UVMaterialShader.wgsl?raw';
 
 export class UVMaterial extends Material {

@@ -1,15 +1,17 @@
-export * from './BasicTriangleRenderer.js'
-export * from './Scene.js'
-export * from './BasicTriangle.js'
-export * from './Time.js'
-export * from './Math.js'
-export * from './Transform.js'
-export * from './PerspectiveCamera.js'
-export * from './BasicTransformRenderer.js'
-export * from './BasicTriangleTransform.js'
-export * from './Renderer.js'
-export * from './Renderable.js'
-export * from './Texture.js'
+//Legacy
+export * from './Legacy/BasicTriangle.js'
+export * from './Legacy/BasicTriangleRenderer.js'
+export * from './Legacy/BasicTriangleTransform.js'
+export * from './Legacy/BasicTransformRenderer.js'
+
+//Core
+export * from './Core/Scene.js'
+export * from './Core/Renderable.js'
+export * from './Core/PerspectiveCamera.js'
+export * from './Core/Renderer.js'
+export * from './Core/Transform.js'
+export * from './Core/Math.js'
+export * from './Core/Time.js'
 
 //Materials
 export * from './Materials/BasicMaterial.js'
@@ -37,3 +39,6 @@ export * from './Meshes/Gizmos/LineGizmoMesh.js'
 export * from './Lights/DirectionalLight.js'
 export * from './Lights/PointLight.js'
 export * from './Lights/SpotLight.js'
+
+//Texture
+export * from './Texture/Texture2D.js'

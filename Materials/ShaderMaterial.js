@@ -1,6 +1,6 @@
 import { vec4 } from 'gl-matrix';
 import { Material } from './Material.js';
-import { Renderer } from '../Renderer.js';
+import { Renderer } from '../Core/Renderer.js';
 import { makeShaderDataDefinitions, makeStructuredView} from 'webgpu-utils';
 
 export class ShaderMaterial extends Material {

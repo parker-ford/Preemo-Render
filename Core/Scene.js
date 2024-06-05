@@ -1,5 +1,5 @@
 import {PerspectiveCamera} from './PerspectiveCamera.js';
-import { Light } from './Lights/Light.js';
+import { Light } from '../Lights/Light.js';
 
 export class Scene {
     constructor() {

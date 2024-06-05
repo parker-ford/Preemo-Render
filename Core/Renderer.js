@@ -1,15 +1,17 @@
 import { Scene } from "./Scene";
-import { BasicTriangleTransform } from "./BasicTriangleTransform";
-import transformShader from './Materials/shaders/transformShader.wgsl?raw';
-import { mat4 } from "gl-matrix";
+import { Renderable } from "./Renderable.js";
+import { Light } from "../Lights/Light.js";
+import { Texture2D } from "../Texture/Texture2D.js";
 
-export class BasicTransformRenderer {
+export class Renderer {
+
     static instance;
+    static drawnObjects = 0;
 
     constructor(canavs) {
 
-        if (BasicTransformRenderer.instance) {
-            return BasicTransformRenderer.instance;
+        if (Renderer.instance) {
+            return Renderer.instance;
         }
 
         this.canvas = canavs;
@@ -19,25 +21,23 @@ export class BasicTransformRenderer {
         this.context = null;
         this.commandBuffers = [];
         this.renderFuncrions = [];
+        this.viewLightHelpers = false;
         
-        //DEBUGGIN
+        //DEBUGGING
         this.printOD = true;
+        this.printLightBuffer = true;
 
-        //Will remove this later
-        this.rotation = 1;
-
-        BasicTransformRenderer.instance = this;
+        Renderer.instance = this;
     }
 
-    async init() {
-
+    async setupDevice() {
         //Checks to see if WebGPU is available
         if (!("gpu" in window.navigator)) {
             console.log("gpu not in navigator");
             return false;
         }
         this.gpu = navigator.gpu;
-
+        console.log(window.navigator);
         //The adapter represents the physicsal gpu device.
         //This method can not fail but it may be null.
         this.adapter = await this.gpu.requestAdapter();
@@ -64,9 +64,10 @@ export class BasicTransformRenderer {
         };
         this.context.configure(configuration);
 
+        return true;
+    }
 
-        //Setting up depth stencil
-
+    setupDepthStencil() {
         this.depthStencilState = {
             format: 'depth24plus-stencil8',
             depthWriteEnabled: true,
@@ -102,102 +103,38 @@ export class BasicTransformRenderer {
             stencilLoadOp: 'clear',
             stencilStoreOp: 'discard',
         }
+    }
 
-
-        //Setting up pipeline
-
+    setupBuffers(){
 
         this.objectsBuffer = this.device.createBuffer({
-            size: 64 * 1024,
+            size: 64 * 2 * 1024,
             usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
-        })
+        });
 
         this.uniformBuffer = this.device.createBuffer({
             size: 64 * 2,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
-        this.bindGroupLayout = this.device.createBindGroupLayout({
-            entries: [
-                {
-                    binding: 0,
-                    visibility: GPUShaderStage.VERTEX,
-                    buffer: {type: 'uniform'}
-                },
-                {
-                    binding: 1,
-                    visibility: GPUShaderStage.VERTEX,
-                    buffer: {
-                        type: 'read-only-storage',
-                        hasDynamicOffset: false
-                    }
-                }
-            ]
+        this.lightBuffer = this.device.createBuffer({
+            size: 80 * 16,
+            usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
         });
+    }
 
-        this.bindGroup = this.device.createBindGroup({
-            layout: this.bindGroupLayout,
-            entries: [
-                {
-                    binding: 0,
-                    resource: {
-                        buffer: this.uniformBuffer
-                    }
-                },
-                {
-                    binding: 1,
-                    resource: {
-                        buffer: this.objectsBuffer
-                    }
-                }
-            ]
-        });
+    async init() {
 
-        this.pipelineLayout = this.device.createPipelineLayout({
-            bindGroupLayouts: [this.bindGroupLayout]
-        })
+        if(!await this.setupDevice()){
+            console.log("device setup failed");
+            return false;
+        }
 
-        this.vertexBufferDescriptors = [
-            {
-                attributes: [
-                    {
-                        shaderLocation: 0,
-                        offset: 0,
-                        format: "float32x4"
-                    },
-                    {
-                        shaderLocation: 1,
-                        offset: 16,
-                        format: "float32x4"
-                    },
-                ],
-                arrayStride: 32,
-                stepMode: "vertex",
-            }
-        ];
+        const initDefaultTexture = Texture2D.getDefaultTexture();
+        await initDefaultTexture.loaded();
 
-        this.shaderModule = this.device.createShaderModule({ code: transformShader });
-        this.pipeline = this.device.createRenderPipeline({
-            layout: this.pipelineLayout,
-            vertex: {
-                module: this.shaderModule,
-                entryPoint: "vertex_main",
-                buffers: this.vertexBufferDescriptors
-            },
-            fragment: {
-                module: this.shaderModule,
-                entryPoint: "fragment_main",
-                targets: [
-                    { format: BasicTransformRenderer.instance.presentationFormat }
-                ],
-                primitive: {
-                    topology: 'triangle-list',
-                }
-            },
-            depthStencil: this.depthStencilState,
-        });
-
-
+        this.setupDepthStencil();
+        this.setupBuffers();
 
         return true;
     }
@@ -211,13 +148,25 @@ export class BasicTransformRenderer {
             throw new TypeError('render must take in a Scene object');
         }
 
+        Renderer.drawnObjects = 0;
+
         //Update everything in the scene
         scene.update();
 
-        
+        //Model, View, Projection Matrices
         this.device.queue.writeBuffer(this.objectsBuffer, 0, scene.object_data, 0, scene.object_data.length);
         this.device.queue.writeBuffer(this.uniformBuffer, 0, camera.viewMatrix);
         this.device.queue.writeBuffer(this.uniformBuffer, 64, camera.projectionMatrix);
+
+        //Light Data
+        if(this.printLightBuffer){
+            //console.log(scene.light_data);
+            //this.printLightBuffer = false;
+            //console.log(scene.object_data.length);
+        }
+        let clearBuffer = new ArrayBuffer(this.lightBuffer.size);
+        this.device.queue.writeBuffer(this.lightBuffer, 0, clearBuffer);
+        this.device.queue.writeBuffer(this.lightBuffer, 0, scene.light_data, 0, scene.light_data.byteLength);
 
         const commandEncoder = this.device.createCommandEncoder();
         const renderPassDescriptor = {
@@ -234,27 +183,40 @@ export class BasicTransformRenderer {
         const renderPass = commandEncoder.beginRenderPass(renderPassDescriptor);
 
         scene.objects.forEach(element => {
-            this.renderObject(renderPass, element, scene.object_count);
+            this.renderObject(renderPass, element);
         });
 
         renderPass.end();
         this.device.queue.submit([commandEncoder.finish()]);
     }
 
-    renderObject(renderPass, element, count) {
-        switch (element.constructor) {
-            case BasicTriangleTransform:
-                this.renderBasicTriangleTransform(renderPass, element, count);
-                break;
-            default:
-                //console.log("non renderable object in scene");
+    renderObject(renderPass, element) {
+        if(element instanceof Renderable){
+            this.renderRenderable(renderPass, element);
+        }
+        else if(element instanceof Light){
+            this.renderLightHelpers(renderPass, element);
+        }
+        else{
+            // console.log("non renderable object in scene: " + element.constructor.name);
         }
     }
 
-    renderBasicTriangleTransform(renderPass, triangle, count) {
-        renderPass.setPipeline(this.pipeline);
-        renderPass.setVertexBuffer(0, triangle.vertexBuffer);
-        renderPass.setBindGroup(0, this.bindGroup);
-        renderPass.draw(3, count, 0, 0);
+    renderRenderable(renderPass, element) {
+        renderPass.setPipeline(element.material.getPipeline(element.material.topology));
+        renderPass.setVertexBuffer(0, element.mesh.vertexBuffer);
+        renderPass.setBindGroup(0, element.material.bindGroup);
+        renderPass.draw(element.mesh.getVertexCount(), 1, 0, Renderer.drawnObjects)
+        Renderer.drawnObjects++;
+    }
+
+    renderLightHelpers(renderPass, element) {
+        if(this.viewLightHelpers){
+            renderPass.setPipeline(element.material.getPipeline(element.material.topology));
+            renderPass.setVertexBuffer(0, element.mesh.vertexBuffer);
+            renderPass.setBindGroup(0, element.material.bindGroup);
+            renderPass.draw(element.mesh.getVertexCount(), 1, 0, Renderer.drawnObjects)
+        }
+        Renderer.drawnObjects++;
     }
 }

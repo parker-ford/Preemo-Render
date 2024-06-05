@@ -1,4 +1,4 @@
-import { Transform } from "../Transform";
+import { Transform } from "../Core/Transform";
 import { BasicMaterial } from "../Materials/BasicMaterial";
 
 export class Light {
