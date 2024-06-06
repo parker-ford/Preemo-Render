@@ -130,9 +130,6 @@ export class Renderer {
             return false;
         }
 
-        const initDefaultTexture = Texture2D.getDefaultTexture();
-        await initDefaultTexture.loaded();
-
         this.setupDepthStencil();
         this.setupBuffers();
 

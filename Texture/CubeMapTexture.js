@@ -1,6 +1,6 @@
 import { Renderer } from "../Core/Renderer";
 
-export class Texture2D {
+export class CubeMapTexture {
     static classMipModule = null;
     static classMipSampler = null;
     static pipelinesByFormat = {};
@@ -14,16 +14,17 @@ export class Texture2D {
     }
 
     constructor(options) {
-        this.path = options.path;
+        this.paths = options.paths;
         this.format = options.format || 'rgba8unorm';
         this.addressMode = options.addressMode || 'repeat';
         this.filter = options.filter || 'linear';
         this.mipmap = options.mipmap || 'nearest';
         this.anisotropy = options.anisotropy | 1;
         this.useMips = options.useMips || false;
-        this.source = null;
+        this.sources = [];
         this.width = 0;
         this.height = 0;
+        this.depth = this.paths.length;
         this.textureInstance = null;
         this.sampler = null;
         this.mipSampler = this.getMipSampler();
@@ -40,11 +41,8 @@ export class Texture2D {
     async init() {
         await this.loadImageBitmap();
         this.createTextureInstance();
-        this.createTextureView();
-        this.createTextureSampler();
-
-        if(this.path){
-            this.copySourceToTexture();
+        if(this.paths){
+            this.copySourcesToTexture();
         }
         else{
             this.writeTextureData();
@@ -52,19 +50,13 @@ export class Texture2D {
     }
 
     async loadImageBitmap() {
-        if(this.path){
-            const response = await fetch(this.path);
+        for (const path of this.paths) {
+            const response = await fetch(path);
             const blob = await response.blob();
-            this.source = await createImageBitmap(blob);
-            this.width = this.source.width;
-            this.height = this.source.height;
-        }
-        else{
-            const size = 64;
-            this.source = new Uint8Array(size * size * 4);
-            this.source.fill(255); 
-            this.width = 64;
-            this.height = 64;
+            const source = await createImageBitmap(blob);
+            this.sources.push(source);
+            this.width = source.width;
+            this.height = source.height;
         }
     }
 
@@ -72,10 +64,11 @@ export class Texture2D {
 
         //Texture
         const textureDescriptor = {
-            label: this.path || 'default texture',
+            label: this.paths[0] || 'default texture',
             size: {
                 width: this.width,
                 height: this.height,
+                depthOrArrayLayers: this.depth,
             },
             format: this.format,
             mipLevelCount: this.useMips ? this.numMipLevels(this.width, this.height) : 1,
@@ -83,24 +76,17 @@ export class Texture2D {
         };
 
         this.textureInstance = Renderer.instance.getDevice().createTexture(textureDescriptor);
-    }
 
-    createTextureView() {
+        
         //Texture view
         const viewDescriptor = {
             format: this.format,
-            dimension: '2d',
-            aspect: 'all',
-            baseMipLevel: 0,
+            dimension: 'cube',
             mipLevelCount: this.useMips ? this.numMipLevels(this.width, this.height) : 1,
-            baseArrayLayer: 0,
-            arrayLayerCount: 1,
         }
 
         this.textureView = this.textureInstance.createView(viewDescriptor);
-    }
 
-    createTextureSampler() {
         //Sampler
         const samplerDescriptor = {
             addressModeU: this.addressMode,
@@ -114,12 +100,16 @@ export class Texture2D {
         this.sampler = Renderer.instance.getDevice().createSampler(samplerDescriptor);
     }
 
-    copySourceToTexture() {
-        Renderer.instance.getDevice().queue.copyExternalImageToTexture(
-            { source: this.source, flipY: true},
-            { texture: this.textureInstance },
-            {width: this.width, height: this.height}
-        );
+    copySourcesToTexture() {
+
+        this.sources.forEach((source, index) => {
+            Renderer.instance.getDevice().queue.copyExternalImageToTexture(
+                { source, flipY: true},
+                { texture: this.textureInstance, origin: [0, 0, index] },
+                {width: this.width, height: this.height}
+            );
+        });
+
         if(this.useMips){
             this.generateMips();
         }
@@ -133,6 +123,7 @@ export class Texture2D {
             { width: this.width, height: this.width },
         );
     }
+
 
     getMipModule() {
         if(!this.constructor.classModule){
@@ -216,32 +207,51 @@ export class Texture2D {
         while(width > 1 || height > 1){
             width = Math.max(1, width / 2 | 0);
             height = Math.max(1, height / 2 | 0);
-            const bindGroup = Renderer.instance.getDevice().createBindGroup({
-                layout: this.pipeline.getBindGroupLayout(0),
-                entries: [
-                    { binding: 0, resource: this.mipSampler },
-                    { binding: 1, resource: this.textureInstance.createView({baseMipLevel, mipLevelCount: 1}) },
-                ],
-            });
 
-            baseMipLevel++;
+            for(let layer = 0; layer < texture.depthOrArrayLayers; layer++){
+                const bindGroup = Renderer.instance.getDevice().createBindGroup({
+                    layout: this.pipeline.getBindGroupLayout(0),
+                    entries: [
+                        { binding: 0, resource: this.mipSampler },
+                        {
+                             binding: 1, 
+                             resource: this.textureInstance.createView({
+                                dimension: '2d',
+                                baseMipLevel, 
+                                mipLevelCount: 1,
+                                baseArrayLayer: layer,
+                                arrayLayerCount: 1
+                            }) 
+                        },
+                    ],
+                });
 
-            const renderPassDescriptor = {
-                label: 'basic canvas renderPass',
-                colorAttachments: [
-                    {
-                        view: this.textureInstance.createView({baseMipLevel, mipLevelCount: 1}),
-                        loadOp: 'clear',
-                        storeOp: 'store',
-                    }
-                ]
+                const renderPassDescriptor = {
+                    label: 'basic canvas renderPass',
+                    colorAttachments: [
+                        {
+                            // view: this.textureInstance.createView({baseMipLevel, mipLevelCount: 1}),
+                            view: this.textureInstance.createView({
+                                dimension: '2d',
+                                baseMipLevel: baseMipLevel + 1, 
+                                mipLevelCount: 1,
+                                baseArrayLayer: layer,
+                                arrayLayerCount: 1
+                            }),
+                            loadOp: 'clear',
+                            storeOp: 'store',
+                        }
+                    ]
+                };
+
+                const pass = encoder.beginRenderPass(renderPassDescriptor);
+                pass.setPipeline(this.pipeline);
+                pass.setBindGroup(0, bindGroup);
+                pass.draw(6);
+                pass.end();
+
             }
-
-            const pass = encoder.beginRenderPass(renderPassDescriptor);
-            pass.setPipeline(this.pipeline);
-            pass.setBindGroup(0, bindGroup);
-            pass.draw(6);
-            pass.end();
+            baseMipLevel++;
         }
 
         const commandBuffer = encoder.finish();

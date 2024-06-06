@@ -42,3 +42,4 @@ export * from './Lights/SpotLight.js'
 
 //Texture
 export * from './Texture/Texture2D.js'
+export * from './Texture/CubeMapTexture.js'
