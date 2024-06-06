@@ -43,7 +43,7 @@ const NUM_LIGHTS: u32 = 16;
 @binding(3) @group(0) var<storage, read> lights: LightArray;
 
 @binding(4) @group(0) var ourSampler: sampler;
-@binding(5) @group(0) var ourTexture: texture_2d<f32>;
+@binding(5) @group(0) var ourTexture: texture_cube<f32>;
 
 fn calculate_directional_light(normal: vec3<f32>, light: LightData) -> vec3<f32>{
     var res: vec3<f32> = vec3<f32>(0.0, 0.0, 0.0);
@@ -161,14 +161,16 @@ fn vertex_main(@builtin(instance_index) id: u32,
 @fragment
 fn fragment_main(fragData: VertexOutput) -> @location(0) vec4<f32>{
 
-    var res: vec3<f32> = uniforms.color.xyz * uniforms.ambient;
-    res += calculate_light(fragData.normal, fragData.world_position) * uniforms.color.xyz;
-    // return vec4<f32>(res, 1.0);
+    return textureSample(ourTexture, ourSampler, fragData.normal);
 
-    var texCol: vec4<f32> = textureSample(ourTexture, ourSampler, fragData.uv * uniforms.tiling + vec2<f32>(uniforms.offset, uniforms.offset) );
-    // return vec4<f32>(texCol.rgb + 0.5, 1.0);
+    // var res: vec3<f32> = uniforms.color.xyz * uniforms.ambient;
+    // res += calculate_light(fragData.normal, fragData.world_position) * uniforms.color.xyz;
+    // // return vec4<f32>(res, 1.0);
 
-    return vec4<f32>(texCol.rgb, 1.0);
+    // var texCol: vec4<f32> = textureSample(ourTexture, ourSampler, fragData.uv * uniforms.tiling + vec2<f32>(uniforms.offset, uniforms.offset) );
+    // // return vec4<f32>(texCol.rgb + 0.5, 1.0);
+
+    // return vec4<f32>(texCol.rgb, 1.0);
 
     // return vec4<f32>(fragData.uv, 0.0, 1.0);
     

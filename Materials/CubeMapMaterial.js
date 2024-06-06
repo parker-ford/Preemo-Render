@@ -2,7 +2,6 @@ import { vec4 } from 'gl-matrix';
 import { Material } from './Material.js';
 import { Renderer } from '../Core/Renderer.js';
 import shader from './shaders/cubeMapShader.wgsl?raw';
-import { Texture2D } from '../Texture/Texture2D.js';
 
 export class CubeMapMaterial extends Material {
     static pipelines = {};
@@ -17,7 +16,7 @@ export class CubeMapMaterial extends Material {
         this.ambient = options.ambient || 0.5;
         this.tiling = options.tiling || 1;
         this.offset = options.offset || 0;
-        this.texture = options.texture || Texture2D.getDefaultTexture();
+        this.texture = options.texture;
     }
 
     init(options){
@@ -138,7 +137,9 @@ export class CubeMapMaterial extends Material {
                 {
                     binding: 5,
                     visibility: GPUShaderStage.FRAGMENT,
-                    texture: {}
+                    texture: {
+                        viewDimension: 'cube',
+                    },
                 }
             ]
         });
