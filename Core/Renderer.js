@@ -1,7 +1,7 @@
 import { Scene } from "./Scene";
 import { Renderable } from "./Renderable.js";
 import { Light } from "../Lights/Light.js";
-import { Texture2D } from "../Texture/Texture2D.js";
+import { SkyBox } from "./SkyBox.js";
 
 export class Renderer {
 
@@ -174,6 +174,12 @@ export class Renderer {
         renderPassDescriptor.colorAttachments[0].view = this.context.getCurrentTexture().createView();
         const renderPass = commandEncoder.beginRenderPass(renderPassDescriptor);
 
+        //Render SkyBox
+        if(scene.skyBox){
+            this.renderSkyBox(renderPass, scene.skyBox);
+        }
+
+        //Render Objects
         scene.objects.forEach(element => {
             this.renderObject(renderPass, element);
         });
@@ -189,9 +195,20 @@ export class Renderer {
         else if(element instanceof Light){
             this.renderLightHelpers(renderPass, element);
         }
+        // else if(element instanceof SkyBox){
+        //     this.renderSkyBox(renderPass, element);
+        // }
         else{
             // console.log("non renderable object in scene: " + element.constructor.name);
         }
+    }
+
+    renderSkyBox(renderPass, element) {
+        renderPass.setPipeline(element.material.getPipeline());
+        renderPass.setVertexBuffer(0, element.mesh.vertexBuffer);
+        renderPass.setBindGroup(0, element.material.bindGroup);
+        renderPass.draw(36)
+        // Renderer.drawnObjects++;
     }
 
     renderRenderable(renderPass, element) {

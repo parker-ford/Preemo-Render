@@ -161,7 +161,8 @@ fn vertex_main(@builtin(instance_index) id: u32,
 @fragment
 fn fragment_main(fragData: VertexOutput) -> @location(0) vec4<f32>{
 
-    return textureSample(ourTexture, ourSampler, fragData.normal);
+    return vec4<f32>(fragData.normal, 1.0);
+    // return textureSample(ourTexture, ourSampler, -fragData.normal);
 
     // var res: vec3<f32> = uniforms.color.xyz * uniforms.ambient;
     // res += calculate_light(fragData.normal, fragData.world_position) * uniforms.color.xyz;

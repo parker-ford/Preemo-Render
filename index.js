@@ -12,6 +12,7 @@ export * from './Core/Renderer.js'
 export * from './Core/Transform.js'
 export * from './Core/Math.js'
 export * from './Core/Time.js'
+export * from './Core/SkyBox.js'
 
 //Materials
 export * from './Materials/BasicMaterial.js'

@@ -1,5 +1,6 @@
 import {PerspectiveCamera} from './PerspectiveCamera.js';
 import { Light } from '../Lights/Light.js';
+import { SkyBox } from './SkyBox.js';
 
 export class Scene {
     constructor() {
@@ -12,6 +13,9 @@ export class Scene {
         this.lights = [];
         this.lights_count = 0;
         this.light_data = new ArrayBuffer(0);
+
+        //SkyBox
+        this.skyBox = null;
 
         //Debug
         this.print = false;
@@ -27,6 +31,10 @@ export class Scene {
             this.lights.push(object);
             this.lights_count++;
             this.light_data = new ArrayBuffer(this.light_data.byteLength + 80);
+        }
+        if(object instanceof SkyBox){
+            this.skyBox = object;
+            // this.object_count++;
         }
     }
 
