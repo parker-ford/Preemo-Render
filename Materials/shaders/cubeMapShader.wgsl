@@ -139,6 +139,7 @@ struct VertexOutput {
     @location(0) normal : vec3<f32>,
     @location(1) world_position : vec3<f32>,
     @location(2) uv : vec2<f32>,
+    @location(3) direction: vec3<f32>
 };
 
 
@@ -151,9 +152,9 @@ fn vertex_main(@builtin(instance_index) id: u32,
     var worldPos = (objects.models[id].model * vec4<f32>(position, 1.0));
     output.world_position = worldPos.xyz;
     output.position = transformUBO.projection * transformUBO.view * worldPos;
-    //output.normal = (objects.models[id].model_i_t * vec4(normal,0)).xyz;
-    //output.normal = normalize(output.normal);
-    output.normal = normalize(position.xyz);
+    output.normal = (objects.models[id].model_i_t * vec4(normal,0)).xyz;
+    output.normal = normalize(output.normal);
+    output.direction = normalize(position.xyz);
     output.uv = uv;
     return output;
 }
@@ -161,8 +162,11 @@ fn vertex_main(@builtin(instance_index) id: u32,
 @fragment
 fn fragment_main(fragData: VertexOutput) -> @location(0) vec4<f32>{
 
-    return vec4<f32>(fragData.normal, 1.0);
-    // return textureSample(ourTexture, ourSampler, -fragData.normal);
+    // return vec4<f32>(fragData.normal, 1.0);
+    var res: vec3<f32> = uniforms.color.xyz;
+    res += calculate_light(fragData.normal, fragData.world_position) * uniforms.color.xyz;
+
+    return (0.8 * vec4<f32>(res, 1.0) + 0.2 * textureSample(ourTexture, ourSampler, -fragData.direction)) * uniforms.ambient;
 
     // var res: vec3<f32> = uniforms.color.xyz * uniforms.ambient;
     // res += calculate_light(fragData.normal, fragData.world_position) * uniforms.color.xyz;
