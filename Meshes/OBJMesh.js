@@ -71,85 +71,126 @@ export class OBJMesh extends Mesh {
         }
     }
 
-    calculateTriangleVerticesQuadFace(){
-        this.triangleCoordinates = [];
-        this.uvs = [];
-        this.normals = [];
+    // calculateTriangleVerticesQuadFace(){
+    //     this.triangleCoordinates = [];
+    //     this.uvs = [];
+    //     this.normals = [];
 
-        for(let i = 0; i < this.faces.length; i++){
+    //     for(let i = 0; i < this.faces.length; i++){
         
-            //Top Triangle
-            this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][0][0]]);
-            this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][1][0]]);
-            this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][2][0]]);
+    //         //Top Triangle
+    //         this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][0][0]]);
+    //         this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][1][0]]);
+    //         this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][2][0]]);
 
-            this.uvs.push(this.uvCoordinates[this.faces[i][0][1]]);
-            this.uvs.push(this.uvCoordinates[this.faces[i][1][1]]);
-            this.uvs.push(this.uvCoordinates[this.faces[i][2][1]]);
+    //         this.uvs.push(this.uvCoordinates[this.faces[i][0][1]]);
+    //         this.uvs.push(this.uvCoordinates[this.faces[i][1][1]]);
+    //         this.uvs.push(this.uvCoordinates[this.faces[i][2][1]]);
 
-            this.normals.push(this.normalCoordinates[this.faces[i][0][2]]);
-            this.normals.push(this.normalCoordinates[this.faces[i][1][2]]);
-            this.normals.push(this.normalCoordinates[this.faces[i][2][2]]);
+    //         this.normals.push(this.normalCoordinates[this.faces[i][0][2]]);
+    //         this.normals.push(this.normalCoordinates[this.faces[i][1][2]]);
+    //         this.normals.push(this.normalCoordinates[this.faces[i][2][2]]);
 
-            //Bottom Triangle
-            this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][0][0]]);
-            this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][3][0]]);
-            this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][2][0]]);
+    //         //Bottom Triangle
+    //         console.log(this.faces[i])
 
-            this.uvs.push(this.uvCoordinates[this.faces[i][0][1]]);
-            this.uvs.push(this.uvCoordinates[this.faces[i][3][1]]);
-            this.uvs.push(this.uvCoordinates[this.faces[i][2][1]]);
+    //         this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][0][0]]);
+    //         this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][3][0]]);
+    //         this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][2][0]]);
 
-            this.normals.push(this.normalCoordinates[this.faces[i][0][2]]);
-            this.normals.push(this.normalCoordinates[this.faces[i][3][2]]);
-            this.normals.push(this.normalCoordinates[this.faces[i][2][2]]);
-        }
+    //         this.uvs.push(this.uvCoordinates[this.faces[i][0][1]]);
+    //         this.uvs.push(this.uvCoordinates[this.faces[i][3][1]]);
+    //         this.uvs.push(this.uvCoordinates[this.faces[i][2][1]]);
 
-        this.triangleVertices = new Float32Array(this.triangleCoordinates.flat());
+    //         this.normals.push(this.normalCoordinates[this.faces[i][0][2]]);
+    //         this.normals.push(this.normalCoordinates[this.faces[i][3][2]]);
+    //         this.normals.push(this.normalCoordinates[this.faces[i][2][2]]);
+    //     }
 
-        this.triangleColors = new Float32Array(
-            Array(this.triangleVertices.length).fill(1.0)
-        );
+    //     this.triangleVertices = new Float32Array(this.triangleCoordinates.flat());
 
-
-        this.triangleUVs = new Float32Array(this.uvs.flat());
-        this.triangleNormals = new Float32Array(this.normals.flat());
-    }
-
-    calculateTriangleVerticesTriangleFace(){
-        this.triangleCoordinates = [];
-        this.uvs = [];
-        this.normals = [];
+    //     this.triangleColors = new Float32Array(
+    //         Array(this.triangleVertices.length).fill(1.0)
+    //     );
 
 
-        for(let i = 0; i < this.faces.length; i++){
+    //     this.triangleUVs = new Float32Array(this.uvs.flat());
+    //     this.triangleNormals = new Float32Array(this.normals.flat());
+    // }
 
-            this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][0][0]]);
-            this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][1][0]]);
-            this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][2][0]]);
-
-            this.uvs.push(this.uvCoordinates[this.faces[i][0][1]]);
-            this.uvs.push(this.uvCoordinates[this.faces[i][1][1]]);
-            this.uvs.push(this.uvCoordinates[this.faces[i][2][1]]);
-
-            this.normals.push(this.normalCoordinates[this.faces[i][0][2]]);
-            this.normals.push(this.normalCoordinates[this.faces[i][1][2]]);
-            this.normals.push(this.normalCoordinates[this.faces[i][2][2]]);
+    // calculateTriangleVerticesTriangleFace(){
+    //     this.triangleCoordinates = [];
+    //     this.uvs = [];
+    //     this.normals = [];
 
 
-        }
+    //     for(let i = 0; i < this.faces.length; i++){
 
-        this.triangleVertices = new Float32Array(this.triangleCoordinates.flat());
-        this.triangleUVs = new Float32Array(this.uvs.flat());
-        this.triangleNormals = new Float32Array(this.normals.flat());
-    }
+    //         this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][0][0]]);
+    //         this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][1][0]]);
+    //         this.triangleCoordinates.push(this.vertexCoordinates[this.faces[i][2][0]]);
+
+    //         this.uvs.push(this.uvCoordinates[this.faces[i][0][1]]);
+    //         this.uvs.push(this.uvCoordinates[this.faces[i][1][1]]);
+    //         this.uvs.push(this.uvCoordinates[this.faces[i][2][1]]);
+
+    //         this.normals.push(this.normalCoordinates[this.faces[i][0][2]]);
+    //         this.normals.push(this.normalCoordinates[this.faces[i][1][2]]);
+    //         this.normals.push(this.normalCoordinates[this.faces[i][2][2]]);
+
+
+    //     }
+
+    //     this.triangleVertices = new Float32Array(this.triangleCoordinates.flat());
+    //     this.triangleUVs = new Float32Array(this.uvs.flat());
+    //     this.triangleNormals = new Float32Array(this.normals.flat());
+    // }
+
+    // calculateTriangleVertices(){
+    //     if(this.quadFace){
+    //         this.calculateTriangleVerticesQuadFace();
+    //     }
+    //     else{
+    //         this.calculateTriangleVerticesTriangleFace();
+    //     }
+    // }
 
     calculateTriangleVertices(){
-        if(this.quadFace){
-            this.calculateTriangleVerticesQuadFace();
+        this.triangleCoordinates = [];
+        this.uvs = [];
+        this.normals = [];
+
+        for(let i = 0; i < this.faces.length; i++){
+            const face = this.faces[i];
+            if(face.length === 3){
+                this.addTriangleFace(face);
+            }
+            else{
+                this.addQuadFace(face);
+            }
         }
-        else{
-            this.calculateTriangleVerticesTriangleFace();
-        }
+
+        this.triangleVertices = new Float32Array(this.triangleCoordinates.flat());
+        this.triangleUVs = new Float32Array(this.uvs.flat());
+        this.triangleNormals = new Float32Array(this.normals.flat());
+    }
+
+    addTriangleFace(face){
+            this.triangleCoordinates.push(this.vertexCoordinates[face[0][0]]);
+            this.triangleCoordinates.push(this.vertexCoordinates[face[1][0]]);
+            this.triangleCoordinates.push(this.vertexCoordinates[face[2][0]]);
+
+            this.uvs.push(this.uvCoordinates[face[0][1]]);
+            this.uvs.push(this.uvCoordinates[face[1][1]]);
+            this.uvs.push(this.uvCoordinates[face[2][1]]);
+
+            this.normals.push(this.normalCoordinates[face[0][2]]);
+            this.normals.push(this.normalCoordinates[face[1][2]]);
+            this.normals.push(this.normalCoordinates[face[2][2]]);
+    }
+
+    addQuadFace(face){
+        this.addTriangleFace([face[0], face[1], face[2]]);
+        this.addTriangleFace([face[0], face[2], face[3]]);
     }
 }
