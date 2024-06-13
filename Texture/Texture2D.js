@@ -38,7 +38,13 @@ export class Texture2D {
     }
 
     async init() {
-        await this.loadImageBitmap();
+        if(this.path){
+            await this.loadImageBitmap();
+        }
+        else{
+            this.fillTextureData();
+        }
+
         this.createTextureInstance();
         this.createTextureView();
         this.createTextureSampler();
@@ -52,20 +58,19 @@ export class Texture2D {
     }
 
     async loadImageBitmap() {
-        if(this.path){
-            const response = await fetch(this.path);
-            const blob = await response.blob();
-            this.source = await createImageBitmap(blob);
-            this.width = this.source.width;
-            this.height = this.source.height;
-        }
-        else{
-            const size = 64;
-            this.source = new Uint8Array(size * size * 4);
-            this.source.fill(255); 
-            this.width = 64;
-            this.height = 64;
-        }
+        const response = await fetch(this.path);
+        const blob = await response.blob();
+        this.source = await createImageBitmap(blob);
+        this.width = this.source.width;
+        this.height = this.source.height;
+    }
+
+    fillTextureData() {
+        const size = 64;
+        this.source = new Uint8Array(size * size * 4);
+        this.source.fill(255); 
+        this.width = 64;
+        this.height = 64;
     }
 
     createTextureInstance() {
@@ -132,6 +137,9 @@ export class Texture2D {
             { bytesPerRow: this.width * 4 },
             { width: this.width, height: this.width },
         );
+        if(this.useMips){
+            this.generateMips();
+        }
     }
 
     getMipModule() {
