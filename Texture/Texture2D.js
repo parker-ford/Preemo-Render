@@ -155,7 +155,7 @@ export class Texture2D {
                   @vertex
                   fn vertex_main( @builtin(vertex_index) vertexIndex : u32
                   ) -> VertexOutput {
-                    let pos = array(
+                    let pos = array<vec2<f32>, 6>(
                       vec2<f32>( 0.0,  0.0),  // center
                       vec2<f32>( 1.0,  0.0),  // right, center
                       vec2<f32>( 0.0,  1.0),  // center, top
@@ -163,9 +163,9 @@ export class Texture2D {
                       vec2<f32>( 1.0,  0.0),  // right, center
                       vec2<f32>( 1.0,  1.0),  // right, top
                     );
-           
-                    var output: VertexOutput;
-                    let xy = pos[vertexIndex];
+                    
+                    var output: VertexOutput;        
+                    let xy: vec2<f32> = pos[vertexIndex % 6u];
                     output.position = vec4<f32>(xy * 2.0 - 1.0, 0.0, 1.0);
                     output.uv = vec2<f32>(xy.x, 1.0 - xy.y);
                     return output;

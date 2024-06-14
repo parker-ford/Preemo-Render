@@ -65,10 +65,10 @@ fn calculate_point_light(normal: vec3<f32>, world_position: vec3<f32>, light: Li
     lightToPos = lightToPos / distToPos;
 
    //Distance attenuation
-    color *=  mix(light.color.rgb * (1 / (distToPos * distToPos + light.falloff)), vec3<f32>(1.0, 1.0, 1.0), 1.0 - light.falloff);
+    color *=  mix(light.color.rgb * (1.0 / (distToPos * distToPos + light.falloff)), vec3<f32>(1.0, 1.0, 1.0), 1.0 - light.falloff);
 
     //Windowing function
-    var win: f32 = 1 - pow((distToPos / light.maxDistance), 4);
+    var win: f32 = 1.0 - pow((distToPos / light.maxDistance), 4.0);
     win = max(win, 0.0);
     win = win * win;
     color *= mix(win, 1.0, 1.0 - light.falloff);
@@ -92,10 +92,10 @@ fn calculate_spot_light(normal: vec3<f32>, world_position: vec3<f32>, light: Lig
     lightToPos = lightToPos / distToPos;
 
     //Distance attenuation
-    color *=  mix(light.color.rgb * (1 / (distToPos * distToPos + light.falloff)), vec3<f32>(1.0, 1.0, 1.0), 1.0 - light.falloff);
+    color *=  mix(light.color.rgb * (1.0 / (distToPos * distToPos + light.falloff)), vec3<f32>(1.0, 1.0, 1.0), 1.0 - light.falloff);
 
     //Windowing function
-    var win: f32 = 1 - pow((distToPos / light.maxDistance), 4);
+    var win: f32 = 1.0 - pow((distToPos / light.maxDistance), 4.0);
     win = max(win, 0.0);
     win = win * win;
     color *= mix(win, 1.0, 1.0 - light.falloff);
@@ -103,8 +103,8 @@ fn calculate_spot_light(normal: vec3<f32>, world_position: vec3<f32>, light: Lig
     //Spotlight effect
     var spotAngle: f32 = dot(normalize(lightToPos), normalize(light.direction.xyz));
     var umbraAngle: f32 = cos(light.umbra);
-    var penumbraAngle: f32 = cos(mix(0, light.umbra, light.penumbra));
-    var spot: f32 =  max(((spotAngle - umbraAngle) / (penumbraAngle - umbraAngle)), 0);
+    var penumbraAngle: f32 = cos(mix(0.0, light.umbra, light.penumbra));
+    var spot: f32 =  max(((spotAngle - umbraAngle) / (penumbraAngle - umbraAngle)), 0.0);
     spot = spot * spot;
     spot = min(spot, 1.0);
 
@@ -119,15 +119,15 @@ fn calculate_spot_light(normal: vec3<f32>, world_position: vec3<f32>, light: Lig
 
 fn calculate_light(normal: vec3<f32>, world_position: vec3<f32>) -> vec3<f32>{
     var res: vec3<f32> = vec3<f32>(0.0, 0.0, 0.0);
-    for(var i: u32 = 0; i < NUM_LIGHTS; i = i + 1){
+    for(var i: u32 = 0u; i < NUM_LIGHTS; i = i + 1u){
         if(lights.lights[i].intensity == 0.0) {continue;}
-        if(lights.lights[i].mode == 0){
+        if(lights.lights[i].mode == 0u){
             res += calculate_directional_light(normal, lights.lights[i]);
         }
-        else if(lights.lights[i].mode == 1){
+        else if(lights.lights[i].mode == 1u){
             res += calculate_point_light(normal, world_position, lights.lights[i]);
         }
-        else if(lights.lights[i].mode == 2){
+        else if(lights.lights[i].mode == 2u){
             res += calculate_spot_light(normal, world_position, lights.lights[i]);
         }
     }
