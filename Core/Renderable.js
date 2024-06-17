@@ -1,6 +1,8 @@
 import {Mesh} from '../Meshes/Mesh.js';
 import {Material} from '../Materials/Material.js';
 import {Transform} from './Transform.js';
+import { ShadowTypes } from '../Shadows/ShadowTypes.js';
+import { ProjectionShadow } from '../Shadows/ProjectionShadow.js';
 
 export class Renderable{
     constructor(options){
@@ -19,6 +21,14 @@ export class Renderable{
         });
 
         this.transform = new Transform({});
+
+        this.shadowType = ShadowTypes.None;
+        this.projectionShadowObject = null;
+    }
+
+    useProjectionShadows(lightPosition){
+        this.shadowType = ShadowTypes.Projection;
+        this.projectionShadowObject = new ProjectionShadow({vertexBufferDescriptors: this.mesh.vertexBufferDescriptors, lightPosition: lightPosition});
     }
 
     changeMaterial(newMaterial){
@@ -40,5 +50,8 @@ export class Renderable{
 
     update(){
         this.transform.update();
+        if(this.shadowType === ShadowTypes.Projection){
+            this.projectionShadowObject.updateUniformBuffer();
+        }
     }
 }

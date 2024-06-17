@@ -1,7 +1,7 @@
 import { Scene } from "./Scene";
 import { Renderable } from "./Renderable.js";
 import { Light } from "../Lights/Light.js";
-import { SkyBox } from "./SkyBox.js";
+import { ShadowTypes } from "../Shadows/ShadowTypes.js";
 
 export class Renderer {
 
@@ -189,20 +189,22 @@ export class Renderer {
     }
 
     renderObject(renderPass, element) {
-        if(element instanceof Renderable){
+        if(element instanceof Renderable && element.shadowType === ShadowTypes.None){
             this.renderRenderable(renderPass, element);
+        }
+        else if(element instanceof Renderable && element.shadowType === ShadowTypes.Projection){
+            this.renderRenderableProjectionShadow(renderPass, element);
         }
         else if(element instanceof Light){
             this.renderLightHelpers(renderPass, element);
         }
-        // else if(element instanceof SkyBox){
-        //     this.renderSkyBox(renderPass, element);
-        // }
         else{
             // console.log("non renderable object in scene: " + element.constructor.name);
         }
     }
 
+
+    //TODO: Investigate the effect this has on the model UBO data structure
     renderSkyBox(renderPass, element) {
         renderPass.setPipeline(element.material.getPipeline());
         renderPass.setVertexBuffer(0, element.mesh.vertexBuffer);
@@ -216,6 +218,22 @@ export class Renderer {
         renderPass.setVertexBuffer(0, element.mesh.vertexBuffer);
         renderPass.setBindGroup(0, element.material.bindGroup);
         renderPass.draw(element.mesh.getVertexCount(), 1, 0, Renderer.drawnObjects)
+        Renderer.drawnObjects++;
+    }
+
+    renderRenderableProjectionShadow(renderPass, element) {
+        //Draw the object
+        renderPass.setPipeline(element.material.getPipeline(element.material.topology));
+        renderPass.setVertexBuffer(0, element.mesh.vertexBuffer);
+        renderPass.setBindGroup(0, element.material.bindGroup);
+        renderPass.draw(element.mesh.getVertexCount(), 1, 0, Renderer.drawnObjects);
+
+        //Draw the shadow
+        renderPass.setPipeline(element.projectionShadowObject.getPipeline());
+        renderPass.setVertexBuffer(0, element.mesh.vertexBuffer);
+        renderPass.setBindGroup(0, element.projectionShadowObject.bindGroup);
+        renderPass.draw(element.mesh.getVertexCount(), 1, 0, Renderer.drawnObjects);
+        
         Renderer.drawnObjects++;
     }
 

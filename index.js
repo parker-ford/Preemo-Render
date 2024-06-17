@@ -23,6 +23,7 @@ export * from './Materials/BasicLitMaterial.js'
 export * from './Materials/BasicTextureLitMaterial.js'
 export * from './Materials/ShaderMaterial.js'
 export * from './Materials/CubeMapMaterial.js'
+export * from './Materials/BasicLitProjectionShadowMaterial.js'
 
 //Meshes
 export * from './Meshes/PlaneMesh.js'

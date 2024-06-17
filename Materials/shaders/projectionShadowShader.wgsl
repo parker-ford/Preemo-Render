@@ -47,7 +47,6 @@ struct VertexOutput {
 fn vertex_main(@builtin(instance_index) id: u32, 
 @location(0) position: vec3<f32>,
 @location(2) normal: vec3<f32> ) -> VertexOutput {
-
     var output: VertexOutput;
     var worldPos = (objects.models[id].model * vec4<f32>(position, 1.0));
     output.world_position = worldPos.xyz;
