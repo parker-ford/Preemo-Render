@@ -13,11 +13,11 @@ export class DirectionalLight extends Light {
         });
     }
 
-    getMode() {
+    get mode() {
         return this.#mode;
     }
 
-    setMode(value) {
+    set mode(value) {
         this.#mode = value;
     }
 

@@ -8,7 +8,7 @@ export class ProjectionShadow {
     static count = 0;
 
     constructor(options) {
-        this.recieverPlane = null;
+        this.recieverPlane = options.recieverPlane || null;
         this.lightPosition = options.lightPosition;
         this.isDirectional = options.isDirectional || false;
         this.shadowProjectionMatrix = mat4.create();
@@ -36,50 +36,68 @@ export class ProjectionShadow {
         // if(!this.lightPosition){
         //     return;
         // }
-        // if(this.isDirectional){
-        //     this.lightPosition = [this.lightPosition[0] * 1, this.lightPosition[1] * 1, this.lightPosition[2] * 1];
-        // }
 
-        // this.shadowProjectionMatrix[0] = this.lightPosition[1];
-        // this.shadowProjectionMatrix[1] = -this.lightPosition[0];
-        // this.shadowProjectionMatrix[5] = 0;
-        // this.shadowProjectionMatrix[9] = -this.lightPosition[2];
-        // this.shadowProjectionMatrix[10] = this.lightPosition[1];
-        // this.shadowProjectionMatrix[13] = -1;
-        // this.shadowProjectionMatrix[15] = this.lightPosition[1];
+        if(this.isDirectional){
+            this.shadowProjectionMatrix[0] = 1;
+            this.shadowProjectionMatrix[1] = -(this.lightPosition[0] / this.lightPosition[1]);
+            this.shadowProjectionMatrix[5] = 0;
+            this.shadowProjectionMatrix[9] = -(this.lightPosition[2] / this.lightPosition[1]);
+        }
+        else{
+            this.shadowProjectionMatrix[0] = this.lightPosition[1];
+            this.shadowProjectionMatrix[1] = -this.lightPosition[0];
+            this.shadowProjectionMatrix[5] = 0;
+            this.shadowProjectionMatrix[9] = -this.lightPosition[2];
+            this.shadowProjectionMatrix[10] = this.lightPosition[1];
+            this.shadowProjectionMatrix[13] = -1;
+            this.shadowProjectionMatrix[15] = this.lightPosition[1];
+        }
 
-        // this.shadowProjectionMatrix[0] = 1;
-        // this.shadowProjectionMatrix[4] = -(this.lightPosition[0] / this.lightPosition[1]);
-        // this.shadowProjectionMatrix[5] = 0;
-        // this.shadowProjectionMatrix[6] = -(this.lightPosition[2] / this.lightPosition[1]);
 
-        this.shadowProjectionMatrix[0] = 1;
-        this.shadowProjectionMatrix[1] = -(this.lightPosition[0] / this.lightPosition[1]);
-        this.shadowProjectionMatrix[5] = 0;
-        this.shadowProjectionMatrix[9] = -(this.lightPosition[2] / this.lightPosition[1]);
+
 
         // this.shadowProjectionMatrix[1] = 1;
         // this.shadowProjectionMatrix[5] = 0;
 
-        if(this.print){
-            console.log([
-                this.shadowProjectionMatrix.slice(0, 4),
-                this.shadowProjectionMatrix.slice(4, 8),
-                this.shadowProjectionMatrix.slice(8, 12),
-                this.shadowProjectionMatrix.slice(12, 16)
-            ].map(row => row.join('\t')).join('\n'));
-            this.print = false;
-        }
-        console.log(this.shadowProjectionMatrix);
+        // if(this.print){
+        //     console.log([
+        //         this.shadowProjectionMatrix.slice(0, 4),
+        //         this.shadowProjectionMatrix.slice(4, 8),
+        //         this.shadowProjectionMatrix.slice(8, 12),
+        //         this.shadowProjectionMatrix.slice(12, 16)
+        //     ].map(row => row.join('\t')).join('\n'));
+        //     this.print = false;
+        // }
+
     }
 
     createUniformBuffer(){
+        // this.uniformBuffer = Renderer.instance.getDevice().createBuffer({
+        //     label: this.constructor.name + '-uniform-buffer' + this.id,
+        //     size:12,
+        //     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        // });
+        // Renderer.instance.getDevice().queue.writeBuffer(this.uniformBuffer, 0, this.recieverPlane.transform.forward);
+        const shadowRecieverDataValues = new ArrayBuffer(32);
+        const shadowRecieverDataViews = {
+        recieverNormal: new Float32Array(shadowRecieverDataValues, 0, 3),
+        recieverPosition: new Float32Array(shadowRecieverDataValues, 16, 3),
+        };
+
+        if(this.print){
+            console.log(this.recieverPlane)
+            this.print = false;
+        }
+
+        shadowRecieverDataViews.recieverNormal.set(this.recieverPlane.transform.forward);
+        shadowRecieverDataViews.recieverPosition.set(this.recieverPlane.transform.position);
+
         this.uniformBuffer = Renderer.instance.getDevice().createBuffer({
             label: this.constructor.name + '-uniform-buffer' + this.id,
-            size:64,
+            size: shadowRecieverDataValues.byteLength,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
-        Renderer.instance.getDevice().queue.writeBuffer(this.uniformBuffer, 0, this.shadowProjectionMatrix);
+        Renderer.instance.getDevice().queue.writeBuffer(this.uniformBuffer, 0, shadowRecieverDataValues);
     }
 
     createBindGroupLayout() {
@@ -100,12 +118,12 @@ export class ProjectionShadow {
                 },
                 {
                     binding: 2,
-                    visibility: GPUShaderStage.VERTEX,
+                    visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
                     buffer: {type: 'uniform'}
                 },
                 {
                     binding: 3,
-                    visibility: GPUShaderStage.FRAGMENT,
+                    visibility: GPUShaderStage.VERTEX,
                     buffer: {
                         type: 'read-only-storage',
                         hasDynamicOffset: false
