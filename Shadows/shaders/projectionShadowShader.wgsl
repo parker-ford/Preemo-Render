@@ -45,17 +45,10 @@ struct VertexOutput {
 fn vertex_main(@builtin(instance_index) id: u32, 
 @location(0) position: vec3<f32>) -> VertexOutput {
 
-    var modifiedMatrix: mat4x4<f32> = mat4x4<f32>(
-        1.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
-    );
-
     var output: VertexOutput;
-    // var worldPos = ( vec4<f32>(position, 1.0) * shadowProjection);
     var worldPos = (objects.models[id].model * vec4<f32>(position, 1.0));
     worldPos = worldPos * shadowProjection;
+    // worldPos = shadowProjection * worldPos;
     worldPos.y += 0.001;
     output.worldPos = position;
     output.position = transformUBO.projection * transformUBO.view * worldPos;

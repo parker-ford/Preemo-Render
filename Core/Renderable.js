@@ -26,9 +26,15 @@ export class Renderable{
         this.projectionShadowObject = null;
     }
 
-    useProjectionShadows(lightPosition){
+    useProjectionShadows(light){
         this.shadowType = ShadowTypes.Projection;
-        this.projectionShadowObject = new ProjectionShadow({vertexBufferDescriptors: this.mesh.vertexBufferDescriptors, lightPosition: lightPosition});
+        //check if the light is a directional light
+        var isDirectional = false;
+        console.log(light);
+        if(light.getMode() === 0){
+            isDirectional = true;
+        }
+        this.projectionShadowObject = new ProjectionShadow({vertexBufferDescriptors: this.mesh.vertexBufferDescriptors, lightPosition: light.transform.position, isDirectional});
     }
 
     changeMaterial(newMaterial){

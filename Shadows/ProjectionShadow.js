@@ -10,6 +10,7 @@ export class ProjectionShadow {
     constructor(options) {
         this.recieverPlane = null;
         this.lightPosition = options.lightPosition;
+        this.isDirectional = options.isDirectional || false;
         this.shadowProjectionMatrix = mat4.create();
         this.id = this.constructor.count++;
         if(!this.constructor.bindGroupLayout){
@@ -22,6 +23,7 @@ export class ProjectionShadow {
         }
 
         this.print = true;
+        console.log(this.isDirectional)
     }
 
     updateUniformBuffer(){
@@ -31,16 +33,30 @@ export class ProjectionShadow {
     }
 
     setShadowProjectionMatrix(){
-        if(!this.lightPosition){
-            return;
-        }
-        this.shadowProjectionMatrix[0] = this.lightPosition[1];
-        this.shadowProjectionMatrix[1] = -this.lightPosition[0];
+        // if(!this.lightPosition){
+        //     return;
+        // }
+        // if(this.isDirectional){
+        //     this.lightPosition = [this.lightPosition[0] * 1, this.lightPosition[1] * 1, this.lightPosition[2] * 1];
+        // }
+
+        // this.shadowProjectionMatrix[0] = this.lightPosition[1];
+        // this.shadowProjectionMatrix[1] = -this.lightPosition[0];
+        // this.shadowProjectionMatrix[5] = 0;
+        // this.shadowProjectionMatrix[9] = -this.lightPosition[2];
+        // this.shadowProjectionMatrix[10] = this.lightPosition[1];
+        // this.shadowProjectionMatrix[13] = -1;
+        // this.shadowProjectionMatrix[15] = this.lightPosition[1];
+
+        // this.shadowProjectionMatrix[0] = 1;
+        // this.shadowProjectionMatrix[4] = -(this.lightPosition[0] / this.lightPosition[1]);
+        // this.shadowProjectionMatrix[5] = 0;
+        // this.shadowProjectionMatrix[6] = -(this.lightPosition[2] / this.lightPosition[1]);
+
+        this.shadowProjectionMatrix[0] = 1;
+        this.shadowProjectionMatrix[1] = -(this.lightPosition[0] / this.lightPosition[1]);
         this.shadowProjectionMatrix[5] = 0;
-        this.shadowProjectionMatrix[9] = -this.lightPosition[2];
-        this.shadowProjectionMatrix[10] = this.lightPosition[1];
-        this.shadowProjectionMatrix[13] = -1;
-        this.shadowProjectionMatrix[15] = this.lightPosition[1];
+        this.shadowProjectionMatrix[9] = -(this.lightPosition[2] / this.lightPosition[1]);
 
         // this.shadowProjectionMatrix[1] = 1;
         // this.shadowProjectionMatrix[5] = 0;
@@ -54,7 +70,7 @@ export class ProjectionShadow {
             ].map(row => row.join('\t')).join('\n'));
             this.print = false;
         }
-        // console.log(this.shadowProjectionMatrix);
+        console.log(this.shadowProjectionMatrix);
     }
 
     createUniformBuffer(){
